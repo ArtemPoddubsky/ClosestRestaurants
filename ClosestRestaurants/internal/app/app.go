@@ -45,14 +45,14 @@ func (a *App) List(w http.ResponseWriter, r *http.Request) {
 	}
 	page, err := strconv.Atoi(u.Get("/?page"))
 	if err != nil || page < 0 {
-		http.Error(w, "Bad Request: this page can't possibly exist", http.StatusBadRequest)
+		http.Error(w, "This page can't possibly exist", http.StatusBadRequest)
 		return
 	}
 
 	rests, err := a.db.GetPage(page)
 	if err != nil {
-		if err.Error() == "This page doesn't exist " {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if err.Error() == "Not Found" {
+			http.Error(w, "This page doesn't exist", http.StatusNotFound)
 		} else {
 			http.Error(w, "Temporary Error (500) ", http.StatusInternalServerError)
 			log.Errorln("Db.GetPage: ", err, r.RequestURI)
@@ -70,7 +70,7 @@ func (a *App) List(w http.ResponseWriter, r *http.Request) {
 func (a *App) ApiRecommend(w http.ResponseWriter, r *http.Request) {
 	var coor utils.Location
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewDecoder(r.Body).Decode(&coor); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&coor); err != nil || (coor.Lat == 0 || coor.Lon == 0){
 		utils.ErrorJSON(w, "Bad JSON", http.StatusBadRequest)
 		return
 	}

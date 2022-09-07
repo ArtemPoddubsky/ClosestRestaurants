@@ -23,4 +23,4 @@ clean: stop
 fclean: clean
 	@-rm -rf /var/tmp/docker/restaurants/postgresql
 
-re: fclean all
+re: clean all

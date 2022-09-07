@@ -34,7 +34,7 @@ func (db Postgres) GetPage(page int) (utils.HTMLPlaces, error) {
 	if err := row.Scan(&r.Total); err != nil {
 		return r, err
 	} else if page > r.Total/10 {
-		return r, errors.New("This page doesn't exist ")
+		return r, errors.New("Not Found")
 	}
 
 	rows, err := db.pool.Query(context.Background(),
