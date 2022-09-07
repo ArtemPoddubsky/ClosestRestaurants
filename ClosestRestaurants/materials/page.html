@@ -1,0 +1,38 @@
+<!doctype html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Places</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<section id="hero">
+
+    <div class="hero-text" data-aos="zoom-out">
+        <h2>Restaurants </h2>
+        <p>This is HTML version of the project</p>
+    </div>
+
+</section>
+
+    <h4>Total: {{.Total}}</h4>
+    <div class="Places-text" data-aos="zoom-out">
+        {{range .Places}}
+            <div>{{.Name}}</div>
+            <div>{{.Address}}</div>
+            <div>{{.Phone}}</div>
+        {{end}}
+    </div>
+{{if (ne .Page 0)}}
+<a href="/?page={{dec .Page}}">Previous</a>
+{{end}}
+{{if (ne .Page (div .Total 10))}}
+<a href="/?page={{inc .Page}}">Next</a>
+{{end}}
+<a href="/?page={{div .Total 10}}">Last</a>
+</body>
+</html>
