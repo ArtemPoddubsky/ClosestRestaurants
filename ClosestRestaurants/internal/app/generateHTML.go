@@ -19,5 +19,6 @@ func GenerateHTML(w http.ResponseWriter, rests utils.HTMLPlaces) error {
 		},
 	}
 	t := template.Must(template.New("page.html").Funcs(funcTemp).ParseFiles("./materials/page.html"))
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	return t.Execute(w, rests)
 }

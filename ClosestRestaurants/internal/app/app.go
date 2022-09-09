@@ -38,7 +38,7 @@ func (a *App) Run() {
 	}
 	log.Infoln("Running")
 	server := &http.Server{
-		Addr:    "127.0.0.1:5000",
+		Addr:    ":5000",
 		Handler: a.Router(),
 	}
 	go func() {
