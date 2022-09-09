@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

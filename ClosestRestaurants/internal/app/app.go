@@ -24,16 +24,29 @@ func NewApp(cfg config.Config) *App {
 	}
 }
 
-func (a *App) Run() {
-	if err := a.db.FillDatabase(); err != nil {
-		log.Fatalln("Filling database error: ", err)
-	}
+func (a *App) Router() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/", a.List)
 	router.HandleFunc("/css/style.css", a.ServeStyle)
 	router.HandleFunc("/api/recommend", a.ApiRecommend)
+	return router
+}
+
+func (a *App) Run() {
+	if err := a.db.FillDatabase(); err != nil {
+		log.Fatalln("Filling database error: ", err)
+	}
 	log.Infoln("Running")
-	log.Fatalln(http.ListenAndServe(":5000", router))
+	server := &http.Server{
+		Addr:    "127.0.0.1:5000",
+		Handler: a.Router(),
+	}
+	go func() {
+		if servErr := server.ListenAndServe(); servErr != http.ErrServerClosed {
+			log.Fatalln("ListenAndServe:", servErr)
+		}
+	}()
+	utils.GracefullShutdown(server)
 }
 
 func (a *App) List(w http.ResponseWriter, r *http.Request) {
@@ -67,10 +80,14 @@ func (a *App) List(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (a *App) ServeStyle(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./materials/css/style.css")
+}
+
 func (a *App) ApiRecommend(w http.ResponseWriter, r *http.Request) {
 	var coor utils.Location
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewDecoder(r.Body).Decode(&coor); err != nil || (coor.Lat == 0 || coor.Lon == 0){
+	if err := json.NewDecoder(r.Body).Decode(&coor); err != nil || (coor.Lat == 0 || coor.Lon == 0) {
 		utils.ErrorJSON(w, "Bad JSON", http.StatusBadRequest)
 		return
 	}
@@ -87,8 +104,4 @@ func (a *App) ApiRecommend(w http.ResponseWriter, r *http.Request) {
 		utils.ErrorJSON(w, "Temporary Error (500)", http.StatusInternalServerError)
 		return
 	}
-}
-
-func (a *App) ServeStyle(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./materials/css/style.css")
 }
