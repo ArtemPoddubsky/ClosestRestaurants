@@ -1,17 +1,20 @@
-package app
+package app_test
 
 import (
 	"bytes"
-	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
+	"context"
+	"main/internal/app"
 	"main/internal/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 func TestApp_ApiRecommend(t *testing.T) {
-	a := NewApp(config.Config{Db: struct {
+	application := app.NewApp(&config.Config{DB: struct {
 		Host     string `toml:"host"`
 		Port     string `toml:"port"`
 		Username string `toml:"username"`
@@ -50,17 +53,19 @@ func TestApp_ApiRecommend(t *testing.T) {
 			respCode: 400,
 		},
 	}
-	for i, val := range tests {
+
+	for idx, val := range tests {
 		res := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodPost, "/api/recommend", bytes.NewBuffer(val.reqBody))
+		req, _ := http.NewRequestWithContext(context.Background(),
+			http.MethodPost, "/api/recommend", bytes.NewBuffer(val.reqBody))
 		router := mux.NewRouter()
-		router.HandleFunc("/api/recommend", a.ApiRecommend)
+		router.HandleFunc("/api/recommend", application.APIRecommend)
 		router.ServeHTTP(res, req)
 
 		if res.Code != val.respCode {
-			t.Error("Test", i+1, "FAIL", "\nExpected:", val.respCode, "Got:", res.Code, "\nBody: ", res.Body)
+			t.Error("Test", idx+1, "FAIL", "\nExpected:", val.respCode, "Got:", res.Code, "\nBody: ", res.Body)
 		} else {
-			log.Infoln("Test", i+1, "OK", "\nExpected:", val.respCode, "Got:", res.Code, "\nBody: ", res.Body)
+			log.Infoln("Test", idx+1, "OK", "\nExpected:", val.respCode, "Got:", res.Code, "\nBody: ", res.Body)
 		}
 	}
 }

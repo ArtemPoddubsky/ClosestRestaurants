@@ -1,12 +1,15 @@
 package app
 
 import (
+	"fmt"
 	"html/template"
 	"main/internal/utils"
 	"net/http"
 )
 
-func GenerateHTML(w http.ResponseWriter, rests utils.HTMLPlaces) error {
+func generateHTML(w http.ResponseWriter, rests utils.HTMLPlaces) error {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
 	funcTemp := template.FuncMap{
 		"inc": func(i int) int {
 			return i + 1
@@ -19,6 +22,10 @@ func GenerateHTML(w http.ResponseWriter, rests utils.HTMLPlaces) error {
 		},
 	}
 	t := template.Must(template.New("page.html").Funcs(funcTemp).ParseFiles("./materials/page.html"))
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	return t.Execute(w, rests)
+
+	if err := t.Execute(w, rests); err != nil {
+		return fmt.Errorf("template.Execute: %w", err)
+	}
+
+	return nil
 }

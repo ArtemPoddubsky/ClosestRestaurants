@@ -1,13 +1,17 @@
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
 	"main/internal/app"
 	"main/internal/config"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	log.Infoln("Building")
+
 	cfg := config.GetConfig()
-	app.NewApp(cfg).Run()
+	application := app.NewApp(&cfg)
+
+	application.Run()
 }

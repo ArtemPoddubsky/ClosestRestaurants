@@ -1,4 +1,5 @@
 all:
+	@echo "Building..."
 	@mkdir -p /var/tmp/docker/restaurants/postgresql
 	@docker compose --env-file ./.env build
 	@docker compose --env-file ./.env up -d
@@ -14,6 +15,10 @@ start:
 
 stop:
 	@docker compose stop
+
+lint:
+	@echo "Linting..."
+	@cd ./ClosestRestaurants && golangci-lint run
 
 clean: stop
 	docker compose down
