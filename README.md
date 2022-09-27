@@ -122,3 +122,5 @@ Service that provides API and HTML UI for interacting with data about Moscow res
 <h2>Сборка</h2>
 
     make
+    
+    make lint – запуск линтера
